@@ -87,10 +87,10 @@ def balance_comparator(total_spending, budget_of_category, category):
               " pile-poil dans le budget. Bravo!")
     elif balance_of_category > 0:
         print(f"Tu as dépensé {total_spending}$ en {category} cette semaine,"
-              " c'est {balance_of_category}$ d'économisé!")
+              f" c'est {balance_of_category}$ d'économisé!")
     else:
         print(f"Tu as dépensé {total_spending}$ en {category} cette semaine,"
-              " c'est {balance_of_category * -1}$ au-dessus du budget.")
+              f" c'est {balance_of_category * -1}$ au-dessus du budget.")
 
 
 balance_epicerie = categories_calculator("épicerie")/2
