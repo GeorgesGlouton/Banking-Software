@@ -14,17 +14,15 @@ Trouver comment garder en mémoire la balance utilisateur
 Ajouter option budget Maxime (diviser par deux l'épicerie)
 """
 
-file_handle = open('balance.txt', mode='r')
-for line in file_handle:
-    content_balance = line.strip()
-    balance = float(content_balance)
-file_handle.close()
+with open('balance.txt', mode='r') as balance_file:
+    for line in balance_file:
+        content_balance = line.strip()
+        balance = float(content_balance)
 
-file_handle = open('vault.txt', mode='r')
-for line in file_handle:
-    content_vault = line.strip()
-    vault = float(content_vault)
-file_handle.close()
+with open('vault.txt', mode='r') as vault_file:
+    for line in vault_file:
+        content_vault = line.strip()
+        vault = float(content_vault)
 
 def get_user_input(prompt, parser=str, newline=False):
     """
@@ -37,7 +35,7 @@ def get_user_input(prompt, parser=str, newline=False):
             if newline:
                 print(prompt)
             else:
-                print(prompt + " ", end="")
+                print("{}:".format(prompt), end="")
             user_input = input()
             return parser(user_input)
         except ValueError:
@@ -137,7 +135,7 @@ balance_comparator(balance_restaurant, 20, "restaurants")
 balance_comparator(balance_materiel_ecole, 20, "matériel d'école")
 balance_comparator(balance_autres, 10, "autres")
 
-balance = float(balance - sum([
+balance = balance - sum([
     balance_epicerie,
     balance_alcool_clopes,
     balance_hygiene,
