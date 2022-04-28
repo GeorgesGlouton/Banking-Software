@@ -1,6 +1,5 @@
 """
 Check compliance with the established weekly budget.
-
 Rentrer le salaire de Blanche, toutes les dépenses, trier les
 dépenses en catégories distinctes.
 Epicerie, alcool/clopes, hygiène, vetements, loisirs, manger à
@@ -15,16 +14,19 @@ Trouver comment garder en mémoire la balance utilisateur
 Ajouter option budget Maxime (diviser par deux l'épicerie)
 """
 
-import re
+with open('balance.txt', mode='r') as balance_file:
+    for line in balance_file:
+        content_balance = line.strip()
+        balance = float(content_balance)
 
-balance = 0
-vault = 0
-
+with open('vault.txt', mode='r') as vault_file:
+    for line in vault_file:
+        content_vault = line.strip()
+        vault = float(content_vault)
 
 def get_user_input(prompt, parser=str, newline=False):
-    r"""
+    """
     Retrieve user input and converts it using `parser`.
-
     If `newline` is set to `false` (default), append `: ` to the prompt.
     Otherwise, append `\n ` to the prompt.
     """
@@ -33,7 +35,7 @@ def get_user_input(prompt, parser=str, newline=False):
             if newline:
                 print(prompt)
             else:
-                print(prompt + ": ", end="")
+                print("{}:".format(prompt), end="")
             user_input = input()
             return parser(user_input)
         except ValueError:
@@ -55,12 +57,14 @@ while True:
         except ValueError:
             print("Tu as du te tromper, réessaye s'il te plaît")
             continue
-print("Allons-y.")
+print("Très bien, calculons maintenant tes dépenses.")
 balance = balance + salary
 
 
 def categories_calculator(category):
-    """Compute stuff."""
+    """
+    Input expenses on each category and make sure it's a number.
+    """
     total_spending = get_user_input(f"Combien as-tu dépensé en {category}?",
                                     float)
     while True:
@@ -80,17 +84,20 @@ def categories_calculator(category):
 
 
 def balance_comparator(total_spending, budget_of_category, category):
-    """Do stuff."""
+    """
+    Compute the difference between the expense of the category and
+    its budget. Print the result depending on 3 outcomes.
+    """
     balance_of_category = budget_of_category - total_spending
     if balance_of_category == 0:
-        print(f"Tu as dépense {total_spending}$ en {category} cette semaine,"
+        print(f"Tu as dépense {round(total_spending, 2)}$ en {category} cette semaine,"
               " pile-poil dans le budget. Bravo!")
     elif balance_of_category > 0:
-        print(f"Tu as dépensé {total_spending}$ en {category} cette semaine,"
-              f" c'est {balance_of_category}$ d'économisé!")
+        print(f"Tu as dépensé {round(total_spending, 2)}$ en {category} cette semaine,"
+              f" c'est {round(balance_of_category, 2)}$ d'économisé!")
     else:
-        print(f"Tu as dépensé {total_spending}$ en {category} cette semaine,"
-              f" c'est {balance_of_category * -1}$ au-dessus du budget.")
+        print(f"Tu as dépensé {round(total_spending, 2)}$ en {category} cette semaine,"
+              f" c'est {round(balance_of_category * -1, 2)}$ au-dessus du budget.")
 
 
 balance_epicerie = categories_calculator("épicerie")/2
@@ -104,16 +111,15 @@ balance_autres = categories_calculator("autres frais")
 balance_charges_fixe = 0
 
 while True:
-    choice = get_user_input("Est-ce ke tu payes tes charges fixes ce mois-ci?",
+    choice = get_user_input("Est-ce que tu payes des" 
+                            " charges fixes ce mois-ci?",
                             str,
                             newline=True)
-    yes_pattern = re.compile('oui', flags=re.IGNORECASE)
-    no_pattern = re.compile('non', flags=re.IGNORECASE)
-    if yes_pattern.match(choice):
+    if choice.upper() == 'OUI':
         balance_charges_fixes = categories_calculator("charges fixes")
         balance_comparator(balance_charges_fixes, 474, "charges fixes")
         break
-    if no_pattern.match(choice):
+    if choice.upper() == 'NON':
         print("Alors passons aux résultats")
         break
     else:
@@ -138,25 +144,31 @@ balance = balance - sum([
     balance_restaurant,
     balance_materiel_ecole,
     balance_charges_fixe
-])
+]))
+
+print(f"Ta balance pour cette semaine est de {round(balance, 2)}$.")
+
+file_handle = open('balance.txt', mode="w")
+file_handle.write(str(balance))
+file_handle.close()
 
 while True:
-    choice = get_user_input(
-        "Est-ce que tu veux mettre de l'argent de côté cette semaine?",
-        newline=True
-    )
-    yes_pattern = re.compile('oui', flags=re.IGNORECASE)
-    no_pattern = re.compile('non', flags=re.IGNORECASE)
-    if yes_pattern.match(choice):
+    choice = get_user_input("Est-ce que tu veux mettre de l'argent de côté?",
+        newline=True)
+    if choice.upper() == 'OUI':
         epargne = float(input("Combien? \n"))
         balance = float(balance) - float(epargne)
         vault = float(vault) + float(epargne)
         break
-    elif no_pattern.match(choice):
+    elif choice.upper() == 'NON:':
         break
     else:
         print("Je n'ai pas compris, réessaye s'il te plaît.")
         continue
 
-print(f"Cette semaine, ta balance est de {balance}$")
-print(f"Au total, tu as mis {vault}$ de côté.")
+print(f"Au total, tu as mis {round(vault, 2)}$ de côté.")
+print(f"Ta balance est maintenant de {round(balance, 2)}$")
+
+file_handle = open('vault.txt', mode='w')
+file_handle.write(str(vault))
+file_handle.close()
